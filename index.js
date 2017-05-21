@@ -1,27 +1,21 @@
 'use strict';
 
-/**
- * sibyl <subcmd> 会自动加载commands文件夹下的subcmd同名文件
- */
-const path = require('path');
-const fs = require('fs');
-const program = require('commander');
+const cmd = require('commander');
+const pkg = require('./package.json');
+const chalk = require('chalk');
 
- program.version('0.0.1')
-    .usage('<subcmd> [option] ...')
-    .parse(process.argv);
+cmd
+  .version(pkg.version)
+  .usage('<command>')
+  .description(pkg.description);
 
-// 输入了子命令
-if (process.argv.length > 2) {
-  let filePath = path.join(__dirname, 'commands', process.argv[2] + '.js');
+// 命令——初始化
+cmd
+  .command('init <templateName>')
+  .description('初始化模板')
+  .action((templateName) => {
+    require('./commands/init')(templateName);
+  });
 
-  if (fs.existsSync(filePath)) {
-    let cmd = require(filePath);
-    cmd.regist();
-  } else {
-    console.error('无效的命令');
-  }
-} else {
- 
 
-}
+cmd.parse(process.argv);
